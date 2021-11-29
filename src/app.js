@@ -99,7 +99,9 @@ module.exports = (db) => {
     });
 
     app.get("/rides", (req, res) => {
-        db.all("SELECT * FROM Rides", function (err, rows) {
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
+        db.all(`SELECT * FROM Rides LIMIT ${offset}, ${limit}`, function (err, rows) {
             if (err) {
                 logger.error(`[SERVER_ERROR]: ${err.message}`);
                 return res.send({
