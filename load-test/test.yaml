@@ -1,0 +1,25 @@
+config:
+  target: http://localhost:8010
+  phases:
+    - duration: 30
+      arrivalRate: 100
+      maxVusers: 100
+  defaults:
+    headers:
+      x-api-key: "{{ $processEnvironment.SERVICE_API_KEY }}"
+scenarios:
+  - flow:
+      - post:
+          url: "/rides"
+          json:
+            "start_lat": 40
+            "start_long": 50
+            "end_lat": 50
+            "end_long": 50
+            "rider_name": "Ride Name"
+            "driver_name": "Driver name"
+            "driver_vehicle": "Driver vehicle"
+      - get:
+          url: "/rides"
+      - get:
+          url: "/rides/1"
