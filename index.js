@@ -31,7 +31,8 @@ const buildSchemas = require('./src/schemas');
 db.serialize(() => {
     buildSchemas(db);
 
-    const app = require('./src/app')(db);
+    const promiseDb = require('./src/db/promise-db')(db);
+    const app = require('./src/app')(promiseDb);
 
     app.listen(port, () =>  logger.info(`App started and listening on port ${port}`));
 });
