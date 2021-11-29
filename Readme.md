@@ -81,6 +81,10 @@ The application provides functionality for organizing rides.
 ### Get a list of rides
 `Get /rides` - get a list of rides
 
+#### Query params
+`limit:number` - integer positive list limit. `Default: 10`  
+`offset:number` - integer positive list offset `Default: 0`  
+
 #### Success response:
 *Status code:* `200`  
 *Content-Type:* `application/json`  
