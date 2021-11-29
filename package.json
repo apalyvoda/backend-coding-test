@@ -7,8 +7,10 @@
     "test": "tests"
   },
   "scripts": {
+    "start:demon": "forever index.js",
     "start": "node index.js",
     "test": "nyc --reporter=lcov --reporter=text-summary mocha tests",
+    "test:load": "artillery run ./load-test/test.yaml",
     "lint": "eslint src --fix"
   },
   "pre-push": [
@@ -20,8 +22,10 @@
   "author": "Bo",
   "license": "ISC",
   "dependencies": {
+    "artillery": "^2.0.0-6",
     "body-parser": "^1.19.0",
     "express": "^4.16.4",
+    "forever": "^4.0.1",
     "sqlite3": "^5.0.2",
     "winston": "^3.3.3"
   },
