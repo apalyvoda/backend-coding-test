@@ -57,7 +57,7 @@ module.exports = class Service {
         }
 
         try {
-            const rows = await this.db.allPromise(`SELECT * FROM Rides LIMIT ${offset}, ${limit}`);
+            const rows = await this.db.allPromise("SELECT * FROM Rides LIMIT ?, ?", [offset, limit]);
             if (rows.length === 0) {
                 throw new NotFoundError(
                     "RIDES_NOT_FOUND_ERROR",
@@ -78,7 +78,7 @@ module.exports = class Service {
             throw new ValidationError("VALIDATION_ERROR", "Id must be a positive integer.");
         }
         try {
-            const rows = await this.db.allPromise(`SELECT * FROM Rides WHERE rideID='${id}'`);
+            const rows = await this.db.allPromise("SELECT * FROM Rides WHERE rideID = ?", [id]);
             if (rows.length === 0) {
                 throw new NotFoundError(
                     "RIDES_NOT_FOUND_ERROR",
