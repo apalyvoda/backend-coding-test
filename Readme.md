@@ -1,102 +1,169 @@
-# Xendit Coding Exercise
-
-The goal of these exercises are to assess your proficiency in software engineering that is related to the daily work that we do at Xendit. Please follow the instructions below to complete the assessment.
+# Xendit
+The application provides functionality for organizing rides.
 
 ## Setup
 
-1. Create a new repository in your own github profile named `backend-coding-test` and commit the contents of this folder
-2. Ensure `node (>8.6 and <= 10)` and `npm` are installed
-3. Run `npm install`
-4. Run `npm test`
-5. Run `npm start`
-6. Hit the server to test health `curl localhost:8010/health` and expect a `200` response 
+1. Ensure `node (>8.6 and <= 10)` and `npm` are installed
+2. Run `npm install`
+3. Run `npm test`
+4. Run `npm start`
+5. Hit the server to test health `curl localhost:8010/health` and expect a `200` response 
 
-## Tasks
+## Endpoints
 
-Below will be your set of tasks to accomplish. Please work on each of these tasks in order. Success criteria will be defined clearly for each task
+### Test health
+`GET /health` - check if the application is working
 
-1. [Documentation](#documentation)
-2. [Implement Tooling](#implement-tooling)
-3. [Implement Pagination](#implement-pagination)
-4. [Refactoring](#refactoring)
-5. [Security](#security)
-6. [Load Testing](#load-testing)
+#### Response:
+*Status code:* `200`  
+*Content-Type:* `text/html`  
+*Body:* `Healthy`  
 
-### Documentation
+### Create ride
+`POST /rides` - create ride
 
-Please deliver documentation of the server that clearly explains the goals of this project and clarifies the API response that is expected.
+#### Request body:
+```json
+{
+  "start_lat": "number",
+  "start_long": "number",
+  "end_lat": "number",
+  "end_long":  "number",
+  "rider_name": "string",
+  "driver_name": "string",
+  "driver_vehicle": "string"
+}
+```
+`start_lat` and `end_lat` - start latitude and end latitude must be between -90 - 90 degrees  
+`start_long` and `end_long` - start longitude and end longitude must be between -180 - 180 degrees  
+`rider_name` - any non-empty string  
+`driver_name` - any non-empty string  
+`driver_vehicle` - any non-empty string  
 
-#### Success Criteria
+#### Success response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+{
+  "rideID": "number",
+  "startLat": "number",
+  "startLong": "number",
+  "endLat": "number",
+  "endLong":  "number",
+  "riderName": "string",
+  "driverName": "string",
+  "driverVehicle": "string",
+  "created": "Date"
+}
+```
+`rideID` - id of the created ride  
+`startLat` and `endLat` - start latitude and end latitude number between -90 - 90 degrees  
+`startLong` and `endLong` - start longitude and end longitude number between -180 - 180 degrees  
+`riderName` - any non-empty string  
+`driverName` - any non-empty string  
+`driverVehicle` - any non-empty string  
+`created` - ride creation date in the format: "YYYY-MM-DD hh:mm:ss"  
 
-1. A pull request against `master` of your fork with a clear description of the change and purpose and merge it
-3. **[BONUS]** Create an easy way to deploy and view the documentation in a web format and include instructions to do so
+#### Error response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+{
+  "error_code": "string",
+  "message": "string"
+}
+```
+`error_code` - error code. This endpoint has two codes: `VALIDATION_ERROR` and `SERVER_ERROR` If you receive an error with the `VALIDATION_ERROR` code, then you need to change the request body. If you receive an error with the `SERVER_ERROR` code, then most likely something is wrong with the database server.  
+`message` - detailed error description
 
-### Implement Tooling
+### Get a list of rides
+`Get /rides` - get a list of rides
 
-Please implement the following tooling:
+#### Success response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+[
+  {
+    "rideID": "number",
+    "startLat": "number",
+    "startLong": "number",
+    "endLat": "number",
+    "endLong":  "number",
+    "riderName": "string",
+    "driverName": "string",
+    "driverVehicle": "string",
+    "created": "Date"
+  }
+]
+```
+`rideID` - id of the created ride  
+`startLat` and `endLat` - start latitude and end latitude number between -90 - 90 degrees  
+`startLong` and `endLong` - start longitude and end longitude number between -180 - 180 degrees  
+`riderName` - any non-empty string  
+`driverName` - any non-empty string  
+`driverVehicle` - any non-empty string  
+`created` - ride creation date in the format: "YYYY-MM-DD hh:mm:ss"
 
-1. `eslint` - for linting
-2. `nyc` - for code coverage
-3. `pre-push` - for git pre push hook running tests
-4. `winston` - for logging
+#### Error response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+{
+  "error_code": "string",
+  "message": "string"
+}
+```
+`error_code` - error code. This endpoint has two codes: `RIDES_NOT_FOUND_ERROR` and `SERVER_ERROR` If you receive an error message with the code `RIDES_NOT_FOUND_ERROR`, then there are no records in the database. If you receive an error with the `SERVER_ERROR` code, then most likely something is wrong with the database server.  
+`message` - detailed error description
 
-#### Success Criteria
 
-1. Create a pull request against `master` of your fork with the new tooling and merge it
-    1. `eslint` should have an opinionated format
-    2. `nyc` should aim for test coverage of `80%` across lines, statements, and branches
-    3. `pre-push` should run the tests before allowing pushing using `git`
-    4. `winston` should be used to replace console logs and all errors should be logged as well. Logs should go to disk.
-2. Ensure that tooling is connected to `npm test`
-3. Create a separate pull request against `master` of your fork with the linter fixes and merge it
-4. Create a separate pull request against `master` of your fork to increase code coverage to acceptable thresholds and merge it
-5. **[BONUS]** Add integration to CI such as Travis or Circle
-6. **[BONUS]** Add Typescript support
+### Get ride by id
+`Get /rides/:id` - get ride by id
 
-### Implement Pagination
+#### Params
+`id:number` - integer positive ride id
 
-Please implement pagination to retrieve pages of the resource `rides`.
+#### Success response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+[
+  {
+    "rideID": "number",
+    "startLat": "number",
+    "startLong": "number",
+    "endLat": "number",
+    "endLong":  "number",
+    "riderName": "string",
+    "driverName": "string",
+    "driverVehicle": "string",
+    "created": "Date"
+  }
+]
+```
+`rideID` - id of the created ride  
+`startLat` and `endLat` - start latitude and end latitude number between -90 - 90 degrees  
+`startLong` and `endLong` - start longitude and end longitude number between -180 - 180 degrees  
+`riderName` - any non-empty string  
+`driverName` - any non-empty string  
+`driverVehicle` - any non-empty string  
+`created` - ride creation date in the format: "YYYY-MM-DD hh:mm:ss"
 
-1. Create a pull request against `master` with your changes to the `GET /rides` endpoint to support pagination including:
-    1. Code changes
-    2. Tests
-    3. Documentation
-2. Merge the pull request
-
-### Refactoring
-
-Please implement the following refactors of the code:
-
-1. Convert callback style code to use `async/await`
-2. Reduce complexity at top level control flow logic and move logic down and test independently
-3. **[BONUS]** Split between functional and imperative function and test independently
-
-#### Success Criteria
-
-1. A pull request against `master` of your fork for each of the refactors above with:
-    1. Code changes
-    2. Tests
-
-### Security
-
-Please implement the following security controls for your system:
-
-1. Ensure the system is not vulnerable to [SQL injection](https://www.owasp.org/index.php/SQL_Injection)
-2. **[BONUS]** Implement an additional security improvement of your choice
-
-#### Success Criteria
-
-1. A pull request against `master` of your fork with:
-    1. Changes to the code
-    2. Tests ensuring the vulnerability is addressed
-
-### Load Testing
-
-Please implement load testing to ensure your service can handle a high amount of traffic
-
-#### Success Criteria
-
-1. Implement load testing using `artillery`
-    1. Create a PR against `master` of your fork including artillery
-    2. Ensure that load testing is able to be run using `npm test:load`. You can consider using a tool like `forever` to spin up a daemon and kill it after the load test has completed.
-    3. Test all endpoints under at least `100 rps` for `30s` and ensure that `p99` is under `50ms`
+#### Error response:
+*Status code:* `200`  
+*Content-Type:* `application/json`  
+*Body schema:*
+```json
+{
+  "error_code": "string",
+  "message": "string"
+}
+```
+`error_code` - error code. This endpoint has two codes: `RIDES_NOT_FOUND_ERROR` and `SERVER_ERROR` If you receive an error message with the `RIDES_NOT_FOUND_ERROR` code, it means that there is no record in the database with the passed identifier. If you receive an error with the `SERVER_ERROR` code, then most likely something is wrong with the database server.    
+`message` - detailed error description
