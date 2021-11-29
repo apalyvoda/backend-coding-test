@@ -12,9 +12,9 @@ module.exports = (db) => {
         });
     };
 
-    db.allPromise = (sql) => {
+    db.allPromise = (sql, values) => {
         return new Promise((resolve, reject) => {
-            db.all(sql, function (error, rows) {
+            db.all(sql, values, function (error, rows) {
                 if (error) {
                     reject(error);
                 }
